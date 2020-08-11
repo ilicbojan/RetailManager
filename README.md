@@ -1,1 +1,1 @@
-# RetailManager
+# Retail Manager
