@@ -1,4 +1,4 @@
-﻿using RMDesktopUI.Models;
+﻿using RMDesktopUI.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,15 +8,18 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RMDesktopUI.Helpers
+namespace RMDesktopUI.Library.Api
 {
     public class APIHelper : IAPIHelper
     {
+        private readonly ILoggedInUserModel _loggedInUser;
+
         private HttpClient apiClient { get; set; }
 
-        public APIHelper()
+        public APIHelper(ILoggedInUserModel loggedInUser)
         {
             InitializeClient();
+            _loggedInUser = loggedInUser;
         }
 
         private void InitializeClient()
@@ -45,6 +48,33 @@ namespace RMDesktopUI.Helpers
                     var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
 
                     return result;
+                }
+                else
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
+        public async Task GetLoggedInUserInfo(string token)
+        {
+            apiClient.DefaultRequestHeaders.Accept.Clear();
+            apiClient.DefaultRequestHeaders.Clear();
+            apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            apiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer { token }");
+
+            using (HttpResponseMessage response = await apiClient.GetAsync("api/User"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsAsync<LoggedInUserModel>();
+
+                    _loggedInUser.CreatedAt = result.CreatedAt;
+                    _loggedInUser.EmailAddress = result.EmailAddress;
+                    _loggedInUser.FirstName = result.FirstName;
+                    _loggedInUser.Id = result.Id;
+                    _loggedInUser.LastName = result.LastName;
+                    _loggedInUser.Token = token;
                 }
                 else
                 {
