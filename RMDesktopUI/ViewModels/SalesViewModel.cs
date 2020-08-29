@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using RMDesktopUI.Library.Api;
+using RMDesktopUI.Library.Helpers;
 using RMDesktopUI.Library.Models;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,13 @@ namespace RMDesktopUI.ViewModels
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private int _itemQuantity = 1;
         private IProductEndpoint _productEndpoint;
+        private IConfigHelper _configHelper;
         private ProductModel _selectedProduct;
 
-        public SalesViewModel(IProductEndpoint productEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
         {
             _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -82,22 +85,43 @@ namespace RMDesktopUI.ViewModels
         {
             get
             {
-                decimal subTotal = 0;
-
-                foreach(var item in Cart)
-                {
-                    subTotal += (item.Product.RetailPrice * item.QuantityInCart);
-                }
-
-                return subTotal.ToString("C");
+                return CalculateSubTotal().ToString();
             }
+        }
+
+        private decimal CalculateSubTotal()
+        {
+            decimal subTotal = 0;
+
+            foreach (var item in Cart)
+            {
+                subTotal += (item.Product.RetailPrice * item.QuantityInCart);
+            }
+
+            return subTotal;
+        }
+        private decimal CalculateTax()
+        {
+            decimal taxAmount = 0;
+            decimal taxRate = _configHelper.GetTaxRate() / 100;
+
+
+            foreach (var item in Cart)
+            {
+                if (item.Product.IsTaxable)
+                {
+                    taxAmount += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
+                }
+            }
+
+            return taxAmount;
         }
 
         public string Tax
         {
             get
             {
-                return "$0.00";
+                return CalculateTax().ToString();
             }
         }
 
@@ -105,7 +129,9 @@ namespace RMDesktopUI.ViewModels
         {
             get
             {
-                return "$0.00";
+                decimal total = CalculateSubTotal() + CalculateTax();
+
+                return total.ToString();
             }
         }
 
@@ -128,7 +154,7 @@ namespace RMDesktopUI.ViewModels
 
         public void AddToCart()
         {
-            CartItemModel existingItem = Cart.First(x => x.Product == SelectedProduct);
+            CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
 
             if (existingItem != null)
             {
@@ -151,6 +177,8 @@ namespace RMDesktopUI.ViewModels
             ItemQuantity = 1;
 
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanRemoveFromCart
@@ -170,6 +198,8 @@ namespace RMDesktopUI.ViewModels
 
 
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanCheckOut
