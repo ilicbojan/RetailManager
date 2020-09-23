@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace RMDataManager.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class ProductController : ApiController
     {
         public List<ProductModel> Get()

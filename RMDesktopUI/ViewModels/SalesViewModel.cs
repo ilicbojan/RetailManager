@@ -18,12 +18,14 @@ namespace RMDesktopUI.ViewModels
         private int _itemQuantity = 1;
         private IProductEndpoint _productEndpoint;
         private IConfigHelper _configHelper;
+        private ISaleEndpoint _saleEndpoint;
         private ProductModel _selectedProduct;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
+            _saleEndpoint = saleEndpoint;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -182,6 +184,7 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
         public bool CanRemoveFromCart
@@ -198,11 +201,10 @@ namespace RMDesktopUI.ViewModels
 
         public void RemoveFromCart()
         {
-
-
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
         public bool CanCheckOut
@@ -211,15 +213,29 @@ namespace RMDesktopUI.ViewModels
             {
                 bool output = false;
 
-                // Make sure something is in the cart
+                if (Cart.Count > 0)
+                {
+                    output = true;
+                }
 
                 return output;
             }
         }
 
-        public void CheckOut()
+        public async Task CheckOut()
         {
+            SaleModel sale = new SaleModel();
 
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.QuantityInCart
+                });
+            }
+
+            await _saleEndpoint.PostSale(sale);
         }
     }
 }
