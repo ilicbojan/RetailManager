@@ -54,21 +54,35 @@ namespace RMDataManager.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            // Save the sale model
-            SqlDataAccess sql = new SqlDataAccess();
-            sql.SaveData("dbo.spSale_Insert", sale, "RMData");
-
-            // Get the ID from the Sale model
-            sale.Id = sql.LoadData<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }, "RMData").FirstOrDefault();
-
-            // Finish filling in the SaleDetail models
-            foreach (var item in details)
+            // TRANSACTION WAY OF DOING CRUD
+            using (SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId = sale.Id;
-                // Save the SaleDetail models
-                sql.SaveData("dbo.spSaleDetail_Insert", item, "RMData");
-            }
+                try
+                {
+                    sql.StartTransaction("RMData");
 
+                    // Save the sale model
+                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                    // Get the ID from the Sale model
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                    // Finish filling in the SaleDetail models
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+                        // Save the SaleDetail models
+                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    }
+
+                    sql.CommitTransaction();
+                }
+                catch
+                {
+                    sql.RollbackTransaction();
+                    throw;
+                }
+            }
         }
 
         //public List<ProductModel> GetProducts()
