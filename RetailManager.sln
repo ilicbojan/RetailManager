@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDataManager", "RMDataManager\RMDataManager.csproj", "{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50}"
-EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "RMData", "RMData\RMData.sqlproj", "{180E9A65-775C-4D79-8E4F-5FC330D64AFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDesktopUI", "RMDesktopUI\RMDesktopUI.csproj", "{E2829F70-16F6-46DF-AAF7-D07ACACFE8BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMDesktopUI", "RMDesktopUI\RMDesktopUI.csproj", "{E2829F70-16F6-46DF-AAF7-D07ACACFE8BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMDataManager.Library", "RMDataManager.Library\RMDataManager.Library.csproj", "{920CBF49-B832-453E-BE04-AD1EFBE87921}"
 EndProject
@@ -27,10 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{180E9A65-775C-4D79-8E4F-5FC330D64AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{180E9A65-775C-4D79-8E4F-5FC330D64AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{180E9A65-775C-4D79-8E4F-5FC330D64AFA}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -58,7 +52,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{69BDB6A7-DF84-434A-B24A-0C3A32C1FE50} = {A31FCF22-4C16-4876-8EE3-B5C0CB091469}
 		{180E9A65-775C-4D79-8E4F-5FC330D64AFA} = {86EFBC09-605A-483F-9C01-84EEDFF2BEE4}
 		{E2829F70-16F6-46DF-AAF7-D07ACACFE8BE} = {665E63A2-80D8-4633-A370-10377A91486C}
 		{920CBF49-B832-453E-BE04-AD1EFBE87921} = {A31FCF22-4C16-4876-8EE3-B5C0CB091469}
